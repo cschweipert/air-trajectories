@@ -25,9 +25,7 @@ def create_layer(date: str, city_id: str) -> list:
         )
 
     data = r.json().get('data')
-
     trajectories = data[0].get('features')
-
     polylines = []
 
     for trajectory in trajectories:
@@ -36,9 +34,8 @@ def create_layer(date: str, city_id: str) -> list:
         polyline = [[location[1], location[0]] for location in coordinates]
         polylines.append(polyline)
 
-    dash_polylines = [dl.Polyline(positions=poly, color='blue') for poly in polylines]
+    dash_polylines = [dl.Polyline(positions=poly, color='blue') for poly in polylines]  # noqa: E501
     map_center = [polylines[0][0][0], polylines[0][0][1]]
-
     return [dl.FeatureGroup(children=dash_polylines), map_center]
 
 
@@ -46,22 +43,46 @@ feature_group, center = create_layer('2022-01-05', 'bangkok_tha.3_1_th')
 
 app.layout = html.Div(
     [
-        html.Header(
-            'Global Air Trajectories',
-            className='header',
+        html.Div(
+            [
+                html.Div(
+                    [
+                        html.Img(
+                            className='image',
+                            src='/assets/crea_logo.svg'
+                        ),
+                        html.Header('Air Trajectories', className='header'),
+                    ],
+                    className='brand-header'
+                ),
+                html.Div(
+                    [
+                        dcc.Dropdown(
+                            id='city',
+                            className='dropdown',
+                            options=options
+                        ),
+                        dcc.Input(
+                            id='date',
+                            className='input',
+                            placeholder='YYYY-MM-DD'
+                            ),
+                        html.Button(
+                            id='button',
+                            className='button',
+                            children=['Get trajectories!']
+                        ),
+                    ],
+                    className='user-input'
+                )
+            ],
+            className='top-row'
         ),
-        dcc.Dropdown(id='city', className='dropdown', options=options),
-        dcc.Input(id='date', className='input', placeholder='YYYY-MM-DD'),
-        html.Button(
-            id='button',
-            className='button',
-            children=['Get trajectories!']
-            ),
         html.Br(),
         html.Div([dl.Map([dl.TileLayer(), feature_group],
                          center=center,
                          zoom=6,
-                         style={'height': '50vh'})], id='trajectories')
+                         style={'height': '100vh'})], id='trajectories')
     ])
 
 
@@ -81,7 +102,7 @@ def update_data(*args: str) -> list[any]:
     return [dl.Map([dl.TileLayer(), new_feature_group],
                    center=new_center,
                    zoom=6,
-                   style={'height': '50vh'})]
+                   style={'height': '100vh'})]
 
 
 if __name__ == '__main__':

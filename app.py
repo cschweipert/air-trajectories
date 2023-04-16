@@ -16,9 +16,8 @@ app = Dash(__name__)
 
 def get_city_ids() -> list[dict]:
     """ Fetches city names and ids.
-        (This filter can be adjusted to filter for cities with trajectories by
-        someone more familiar with the architecture of the data store the
-        trajectories are pulled from.)
+        (In production I would modify this function to filter
+        only for cities with trajectoires available.)
         Output: [{label: str, value: str}]
     """
     r = requests.get('https://api.energyandcleanair.org/cities', timeout=10)

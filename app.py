@@ -8,10 +8,29 @@ from dash.exceptions import PreventUpdate
 
 app = Dash(__name__)
 
-options = [
-    {'label': 'Bangkok', 'value': 'bangkok_tha.3_1_th'},
-    {'label': 'Kuala Lumpur', 'value': 'kuala lumpur_mys.4_1_my'}
-    ]
+
+def get_city_ids() -> list[dict]:
+    """ Fetches city names and ids.
+        (This filter can be adjusted to filter for cities with trajectories by
+        someone more fmailiar with the architecture of the data store the
+        trajectories are pulled form.)
+        Output: [{label: str, value: str}]
+    """
+    r = requests.get('https://api.energyandcleanair.org/cities', timeout=10)
+    data = r.json().get('data')
+    cities = []
+
+    for city in data:
+        if city.get('name') in ['Bangkok', 'Kuala Lumpur']:
+            city_data = {
+                'label': city.get('name'),
+                'value': city.get('id')
+                }
+            cities.append(city_data)
+    return cities
+
+
+options = get_city_ids()
 
 
 def create_layer(date: str, city_id: str) -> list:
@@ -23,6 +42,9 @@ def create_layer(date: str, city_id: str) -> list:
         f'https://api.energyandcleanair.org/v1/trajectories?location_id={city_id}&date={date}',
         timeout=10
         )
+
+    if not r:
+        pass
 
     data = r.json().get('data')
     trajectories = data[0].get('features')

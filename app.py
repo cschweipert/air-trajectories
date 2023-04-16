@@ -1,4 +1,9 @@
-"""Dash app to fetch and display air trajectories."""
+""" Dash app to fetch and display air trajectories.
+    To get started run
+    1. ~pip install -r requirements.txt
+    2. ~python app.py
+    3. The dashboard will be served on http://127.0.0.1:8050
+"""
 from __future__ import annotations
 import requests
 import dash_leaflet as dl
@@ -12,8 +17,8 @@ app = Dash(__name__)
 def get_city_ids() -> list[dict]:
     """ Fetches city names and ids.
         (This filter can be adjusted to filter for cities with trajectories by
-        someone more fmailiar with the architecture of the data store the
-        trajectories are pulled form.)
+        someone more familiar with the architecture of the data store the
+        trajectories are pulled from.)
         Output: [{label: str, value: str}]
     """
     r = requests.get('https://api.energyandcleanair.org/cities', timeout=10)
